@@ -1,19 +1,55 @@
-from flask_sqlalchemy import SQLAlchemy
+import os
+import sys
+from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+from sqlalchemy import create_engine
+from eralchemy import render_er
 
-db = SQLAlchemy()
+Base = declarative_base()
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), unique=False, nullable=False)
-    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
+class user(Base):
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String)
+    last_name = Column(String)
+    address = Column(String)
+    email = Column(String)
+    password = Column(String)
 
-    def __repr__(self):
-        return '<User %r>' % self.username
 
-    def serialize(self):
-        return {
-            "id": self.id,
-            "email": self.email,
-            # do not serialize the password, its a security breach
-        }
+class post(Base):
+    __tablename__ = 'post'
+    id = Column(Integer, primary_key=True)
+    image = Column(String)
+    date = Column(String)
+    user = Column(String)
+
+class post_likes(Base):
+    __tablename__ = 'post_likes'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    post_id = Column(Integer, ForeignKey('user.id'))
+    published_at = Column(String)
+
+class direct_message(Base):
+    __tablename__ = 'direct_message'
+    id = Column(Integer, primary_key=True)
+    sender_id = Column(Integer, ForeignKey('user.id'))
+    recibed_id = Column(Integer, ForeignKey('user.id'))
+    message = Column(String(300))
+    published_at = Column(String)
+
+class comments(Base):
+    __tablename__ = 'comments'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    post_id = Column(Integer, ForeignKey('user.id'))
+    message = Column(String(300))
+
+
+    def to_dict(self):
+        return {}
+
+## Draw from SQLAlchemy base
+render_er(Base, 'diagram.png')
